@@ -30,26 +30,20 @@
 python -m src.server.mcp_server
 ```
 
-在启动后，可按照 JSON-RPC 2.0 的格式向服务器发送请求，调用示例工具 `query_knowledge_base`、`query_medical_resources`、`analyze_report` 或 `query_clinical_trials`。
+在启动后，可按照 JSON-RPC 2.0 的格式向服务器发送请求，调用示例工具 `query_knowledge_base`、`query_medical_resources`、`analyze_report`、`query_clinical_trials`、`plan_travel`、`query_insurance_policy` 或 `query_drug_info`。
 
 # mcp的设计想法
 
 1. 通过mcp，让现有能力可以开放给更多开发者和开源社区应用
 2. 个人感觉：知识库，相比RAG智能体，可能更多人关心
 3. MCP的tools构成
-   - 知识库调用
-   - 影像分析
+   - 知识库查询
+   - 医疗资源查询
    - 报告分析
-   - 医疗资源查询和行动（比如预约）
-   - 临床试验查询（clinicaltrials.gov提供官方api）
-   - 医药查询（丁香园，百度这些提供医药api，但是加密，还需要找到开放的api）
-   - 外地就医旅行规划（调用12306，高德mcp）
-   - 其它的
-     - 医院挂号预约
-   - 服务类
-     - 医保政策咨询
-     - 医保药物购买渠道查询
-   - 工具
+   - 临床试验查询
+   - 就医旅行规划
+   - 医保政策咨询
+   - 药物信息查询
 
 ---
 
@@ -119,7 +113,7 @@ python -m src.server.mcp_server
 - **输出**：符合条件的试验列表、入组要求、联系方式
 - **数据源**：clinicaltrials.gov官方API
 
-### 第二阶段：扩展功能
+### 第二阶段：扩展功能（已实现）
 
 #### 1. 外地就医旅行规划
 
@@ -170,7 +164,9 @@ python -m src.server.mcp_server
 │   │   ├── medical_resources.py   # 医疗资源查询工具
 │   │   ├── report_analysis.py     # 报告分析工具
 │   │   ├── clinical_trials.py     # 临床试验查询工具
-│   │   └── travel_planning.py     # 就医旅行规划工具
+│   │   ├── travel_planner.py      # 就医旅行规划工具
+│   │   ├── insurance_policy.py    # 医保政策咨询工具
+│   │   └── drug_info.py           # 药物信息查询工具
 │   ├── resources/                 # MCP资源实现
 │   │   ├── __init__.py
 │   │   ├── knowledge_db.py        # 知识库资源
