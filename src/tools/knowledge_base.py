@@ -2,6 +2,8 @@
 
 from typing import List
 
+from ..utils.cache import cached_tool
+
 class KnowledgeBase:
     """Simple in-memory knowledge base for cancer-related information."""
 
@@ -16,6 +18,7 @@ class KnowledgeBase:
             ],
         }
 
+    @cached_tool()
     async def query(self, cancer_type: str, query: str, detail_level: str = "详细") -> List[str]:
         """Return basic information for the given cancer type."""
         results = self.data.get(cancer_type, [])
