@@ -32,6 +32,20 @@ python -m src.server.mcp_server
 
 在启动后，可按照 JSON-RPC 2.0 的格式向服务器发送请求，调用示例工具 `query_knowledge_base`、`query_medical_resources`、`analyze_report`、`query_clinical_trials`、`plan_travel`、`query_insurance_policy` 或 `query_drug_info`。
 
+### 列出服务器提供的工具
+
+```json
+{"jsonrpc": "2.0", "id": "1", "method": "tools/list", "params": {}}
+```
+
+### 获取服务器能力声明
+
+```json
+{"jsonrpc": "2.0", "id": "2", "method": "server/get_capabilities", "params": {}}
+```
+
+`server/get_capabilities` 的返回值来源于 `config/capabilities.json`，若该文件不存在或解析失败，将使用内置的默认能力声明。
+
 # mcp的设计想法
 
 1. 通过mcp，让现有能力可以开放给更多开发者和开源社区应用
