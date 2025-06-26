@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import Any, Dict
 
 from ..tools.knowledge_base import KnowledgeBase
+from ..utils.metrics import MCPMetrics
 
 @dataclass
 class Request:
@@ -15,16 +16,26 @@ class Request:
 class MCPServer:
     def __init__(self) -> None:
         self.kb = KnowledgeBase()
+        self.metrics = MCPMetrics()
 
     async def handle_request(self, request: Request) -> Dict[str, Any]:
         if request.method == "tools/call" and request.params.get("name") == "query_knowledge_base":
             args = request.params.get("arguments", {})
-            result = await self.kb.query(
-                cancer_type=args.get("cancer_type", ""),
-                query=args.get("query", ""),
-                detail_level=args.get("detail_level", "详细"),
-            )
-            return {"id": request.id, "result": result, "jsonrpc": "2.0"}
+            start = asyncio.get_event_loop().time()
+            success = True
+            try:
+                result = await self.kb.query(
+                    cancer_type=args.get("cancer_type", ""),
+                    query=args.get("query", ""),
+                    detail_level=args.get("detail_level", "详细"),
+                )
+                return {"id": request.id, "result": result, "jsonrpc": "2.0"}
+            except Exception:
+                success = False
+                raise
+            finally:
+                duration = asyncio.get_event_loop().time() - start
+                self.metrics.record_tool_call("query_knowledge_base", duration, success)
         return {"id": request.id, "error": {"code": -32601, "message": "Method not found"}, "jsonrpc": "2.0"}
 
 async def main():
