@@ -13,6 +13,8 @@ from ..tools.insurance_policy import InsurancePolicy
 from ..tools.drug_info import DrugInfo
 from ..utils.metrics import MCPMetrics
 from ..utils.errors import McpError
+from ..utils.docs import generate_tool_docs
+from .capabilities import get_capabilities
 
 
 @dataclass
@@ -32,8 +34,23 @@ class MCPServer:
         self.policy = InsurancePolicy()
         self.drug = DrugInfo()
         self.metrics = MCPMetrics()
+        self.capabilities = get_capabilities()
+        self.tool_classes = [
+            self.kb,
+            self.resources,
+            self.report,
+            self.trials,
+            self.travel,
+            self.policy,
+            self.drug,
+        ]
 
     async def handle_request(self, request: Request) -> Dict[str, Any]:
+        if request.method == "tools/list":
+            docs = [generate_tool_docs(tool.__class__) for tool in self.tool_classes]
+            return {"id": request.id, "result": docs, "jsonrpc": "2.0"}
+        if request.method == "server/get_capabilities":
+            return {"id": request.id, "result": self.capabilities, "jsonrpc": "2.0"}
         if request.method == "tools/call":
             name = request.params.get("name")
             args = request.params.get("arguments", {})

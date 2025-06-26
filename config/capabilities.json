@@ -1,0 +1,6 @@
+{
+    "tools": {"listChanged": true},
+    "resources": {"subscribe": true, "listChanged": true},
+    "prompts": {"listChanged": true},
+    "logging": {}
+}
