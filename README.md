@@ -30,7 +30,7 @@
 python -m src.server.mcp_server
 ```
 
-在启动后，可按照 JSON-RPC 2.0 的格式向服务器发送请求，调用示例工具 `query_knowledge_base` 或 `query_medical_resources`。
+在启动后，可按照 JSON-RPC 2.0 的格式向服务器发送请求，调用示例工具 `query_knowledge_base`、`query_medical_resources`、`analyze_report` 或 `query_clinical_trials`。
 
 # mcp的设计想法
 
