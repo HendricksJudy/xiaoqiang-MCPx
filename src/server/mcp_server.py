@@ -8,6 +8,9 @@ from ..tools.knowledge_base import KnowledgeBase
 from ..tools.medical_resources import MedicalResources
 from ..tools.report_analysis import ReportAnalysis
 from ..tools.clinical_trials import ClinicalTrials
+from ..tools.travel_planner import TravelPlanner
+from ..tools.insurance_policy import InsurancePolicy
+from ..tools.drug_info import DrugInfo
 from ..utils.metrics import MCPMetrics
 from ..utils.errors import McpError
 
@@ -25,6 +28,9 @@ class MCPServer:
         self.resources = MedicalResources()
         self.report = ReportAnalysis()
         self.trials = ClinicalTrials()
+        self.travel = TravelPlanner()
+        self.policy = InsurancePolicy()
+        self.drug = DrugInfo()
         self.metrics = MCPMetrics()
 
     async def handle_request(self, request: Request) -> Dict[str, Any]:
@@ -56,6 +62,21 @@ class MCPServer:
                         disease_type=args.get("disease_type", ""),
                         location=args.get("location", ""),
                         patient_condition=args.get("patient_condition", ""),
+                    )
+                elif name == "plan_travel":
+                    result = await self.travel.plan(
+                        origin=args.get("origin", ""),
+                        destination=args.get("destination", ""),
+                        date=args.get("date", ""),
+                    )
+                elif name == "query_insurance_policy":
+                    result = await self.policy.query(
+                        region=args.get("region", ""),
+                        topic=args.get("topic", ""),
+                    )
+                elif name == "query_drug_info":
+                    result = await self.drug.query(
+                        drug_name=args.get("drug_name", "")
                     )
                 else:
                     return {

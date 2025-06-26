@@ -72,3 +72,42 @@ class ClinicalTrialQueryRequest(BaseModel):
         if v not in allowed_types:
             raise ValueError(f"不支持的疾病类型: {v}")
         return v
+
+
+class TravelPlanRequest(BaseModel):
+    """Schema for travel planning requests."""
+
+    origin: str
+    destination: str
+    date: str
+
+    @validator("origin", "destination", "date")
+    def not_empty(cls, v: str) -> str:
+        if not v.strip():
+            raise ValueError("字段不能为空")
+        return v.strip()
+
+
+class InsurancePolicyQueryRequest(BaseModel):
+    """Schema for insurance policy queries."""
+
+    region: str
+    topic: str = ""
+
+    @validator("region")
+    def validate_region(cls, v: str) -> str:
+        if not v.strip():
+            raise ValueError("地区不能为空")
+        return v.strip()
+
+
+class DrugInfoQueryRequest(BaseModel):
+    """Schema for drug information lookup."""
+
+    drug_name: str
+
+    @validator("drug_name")
+    def validate_name(cls, v: str) -> str:
+        if not v.strip():
+            raise ValueError("药物名不能为空")
+        return v.strip()
