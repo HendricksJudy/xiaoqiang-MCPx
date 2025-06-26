@@ -3,6 +3,8 @@
 from typing import List
 
 from ..utils.cache import cached_tool
+from ..utils.errors import handle_mcp_errors
+from ..schemas import KnowledgeQueryRequest
 
 class KnowledgeBase:
     """Simple in-memory knowledge base for cancer-related information."""
@@ -18,10 +20,12 @@ class KnowledgeBase:
             ],
         }
 
+    @handle_mcp_errors
     @cached_tool()
     async def query(self, cancer_type: str, query: str, detail_level: str = "详细") -> List[str]:
         """Return basic information for the given cancer type."""
-        results = self.data.get(cancer_type, [])
-        if detail_level == "简要":
+        req = KnowledgeQueryRequest(cancer_type=cancer_type, query=query, detail_level=detail_level)
+        results = self.data.get(req.cancer_type, [])
+        if req.detail_level == "简要":
             return results[:1]
         return results

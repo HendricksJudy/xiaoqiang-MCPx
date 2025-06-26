@@ -5,7 +5,9 @@ from dataclasses import dataclass
 from typing import Any, Dict
 
 from ..tools.knowledge_base import KnowledgeBase
+from ..tools.medical_resources import MedicalResources
 from ..utils.metrics import MCPMetrics
+from ..utils.errors import McpError
 
 @dataclass
 class Request:
@@ -16,26 +18,40 @@ class Request:
 class MCPServer:
     def __init__(self) -> None:
         self.kb = KnowledgeBase()
+        self.resources = MedicalResources()
         self.metrics = MCPMetrics()
 
     async def handle_request(self, request: Request) -> Dict[str, Any]:
-        if request.method == "tools/call" and request.params.get("name") == "query_knowledge_base":
+        if request.method == "tools/call":
+            name = request.params.get("name")
             args = request.params.get("arguments", {})
             start = asyncio.get_event_loop().time()
             success = True
             try:
-                result = await self.kb.query(
-                    cancer_type=args.get("cancer_type", ""),
-                    query=args.get("query", ""),
-                    detail_level=args.get("detail_level", "详细"),
-                )
+                if name == "query_knowledge_base":
+                    result = await self.kb.query(
+                        cancer_type=args.get("cancer_type", ""),
+                        query=args.get("query", ""),
+                        detail_level=args.get("detail_level", "详细"),
+                    )
+                elif name == "query_medical_resources":
+                    result = await self.resources.query(
+                        disease_type=args.get("disease_type", ""),
+                        location=args.get("location", ""),
+                        level=args.get("level", "三级甲等"),
+                    )
+                else:
+                    return {"id": request.id, "error": {"code": -32601, "message": "Method not found"}, "jsonrpc": "2.0"}
                 return {"id": request.id, "result": result, "jsonrpc": "2.0"}
+            except McpError as e:
+                success = False
+                return {"id": request.id, "error": {"code": e.code, "message": e.message}, "jsonrpc": "2.0"}
             except Exception:
                 success = False
                 raise
             finally:
                 duration = asyncio.get_event_loop().time() - start
-                self.metrics.record_tool_call("query_knowledge_base", duration, success)
+                self.metrics.record_tool_call(name or "unknown", duration, success)
         return {"id": request.id, "error": {"code": -32601, "message": "Method not found"}, "jsonrpc": "2.0"}
 
 async def main():
