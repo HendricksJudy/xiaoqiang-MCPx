@@ -11,7 +11,15 @@ import pytest
 @pytest.mark.asyncio
 async def test_query():
     server = MCPServer()
-    req = Request(id="1", method="tools/call", params={"name": "query_knowledge_base", "arguments": {"cancer_type": "肺癌", "query": "靶向"}})
+    req = Request(
+        id="1",
+        method="tools/call",
+        params={
+            "name": "query_knowledge_base",
+            "arguments": {"cancer_type": "肺癌", "query": "靶向"},
+            "token": "testtoken",
+        },
+    )
     resp = await server.handle_request(req)
     assert resp["result"]
 

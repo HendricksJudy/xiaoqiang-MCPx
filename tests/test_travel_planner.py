@@ -17,6 +17,7 @@ async def test_travel_plan():
         params={
             "name": "plan_travel",
             "arguments": {"origin": "北京", "destination": "上海", "date": "2024-01-01"},
+            "token": "testtoken",
         },
     )
     resp = await server.handle_request(req)

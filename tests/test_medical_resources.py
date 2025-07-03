@@ -15,7 +15,11 @@ async def test_medical_resources_query():
     req = Request(
         id="1",
         method="tools/call",
-        params={"name": "query_medical_resources", "arguments": {"disease_type": "肺癌", "location": "北京"}},
+        params={
+            "name": "query_medical_resources",
+            "arguments": {"disease_type": "肺癌", "location": "北京"},
+            "token": "testtoken",
+        },
     )
     resp = await server.handle_request(req)
     assert resp["result"]
