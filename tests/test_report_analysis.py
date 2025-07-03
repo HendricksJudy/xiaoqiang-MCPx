@@ -14,7 +14,11 @@ async def test_report_analysis():
     req = Request(
         id="1",
         method="tools/call",
-        params={"name": "analyze_report", "arguments": {"report_type": "病理", "content": "癌细胞呈阳性"}},
+        params={
+            "name": "analyze_report",
+            "arguments": {"report_type": "病理", "content": "癌细胞呈阳性"},
+            "token": "testtoken",
+        },
     )
     resp = await server.handle_request(req)
     assert resp["result"]["report_type"] == "病理"

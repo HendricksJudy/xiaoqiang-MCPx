@@ -14,6 +14,8 @@ from ..tools.drug_info import DrugInfo
 from ..utils.metrics import MCPMetrics
 from ..utils.errors import McpError
 from ..utils.docs import generate_tool_docs
+from ..security.auth import verify_token
+from ..security.rate_limiter import RateLimiter
 from .capabilities import get_capabilities
 
 
@@ -34,6 +36,7 @@ class MCPServer:
         self.policy = InsurancePolicy()
         self.drug = DrugInfo()
         self.metrics = MCPMetrics()
+        self.rate_limiter = RateLimiter()
         self.capabilities = get_capabilities()
         self.tool_classes = [
             self.kb,
@@ -54,9 +57,12 @@ class MCPServer:
         if request.method == "tools/call":
             name = request.params.get("name")
             args = request.params.get("arguments", {})
+            token = request.params.get("token", "")
             start = asyncio.get_event_loop().time()
             success = True
             try:
+                verify_token(token)
+                self.rate_limiter.check(token)
                 if name == "query_knowledge_base":
                     result = await self.kb.query(
                         cancer_type=args.get("cancer_type", ""),

@@ -32,6 +32,10 @@ python -m src.server.mcp_server
 
 在启动后，可按照 JSON-RPC 2.0 的格式向服务器发送请求，调用示例工具 `query_knowledge_base`、`query_medical_resources`、`analyze_report`、`query_clinical_trials`、`plan_travel`、`query_insurance_policy` 或 `query_drug_info`。
 
+所有 `tools/call` 请求需要在 `params` 中提供 `token` 字段。有效 token 可通过
+环境变量 `MCP_TOKEN` 设置（默认为 `testtoken`）。服务器会限制同一 token 在
+一小时内最多 100 次请求，超过限制将返回错误码 `-32002`。
+
 ### 列出服务器提供的工具
 
 ```json

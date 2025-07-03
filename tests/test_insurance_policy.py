@@ -14,7 +14,11 @@ async def test_insurance_policy_query():
     req = Request(
         id="1",
         method="tools/call",
-        params={"name": "query_insurance_policy", "arguments": {"region": "北京"}},
+        params={
+            "name": "query_insurance_policy",
+            "arguments": {"region": "北京"},
+            "token": "testtoken",
+        },
     )
     resp = await server.handle_request(req)
     assert resp["result"]

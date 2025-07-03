@@ -14,7 +14,11 @@ async def test_clinical_trials_query():
     req = Request(
         id="1",
         method="tools/call",
-        params={"name": "query_clinical_trials", "arguments": {"disease_type": "肺癌"}},
+        params={
+            "name": "query_clinical_trials",
+            "arguments": {"disease_type": "肺癌"},
+            "token": "testtoken",
+        },
     )
     resp = await server.handle_request(req)
     assert resp["result"]

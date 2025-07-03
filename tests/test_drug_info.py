@@ -14,7 +14,11 @@ async def test_drug_info_query():
     req = Request(
         id="1",
         method="tools/call",
-        params={"name": "query_drug_info", "arguments": {"drug_name": "阿司匹林"}},
+        params={
+            "name": "query_drug_info",
+            "arguments": {"drug_name": "阿司匹林"},
+            "token": "testtoken",
+        },
     )
     resp = await server.handle_request(req)
     assert resp["result"].get("usage") == "解热镇痛、抗炎"
