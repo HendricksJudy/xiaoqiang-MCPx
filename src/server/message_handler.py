@@ -2,10 +2,13 @@
 
 import json
 from typing import Optional
+import structlog
 
 from .mcp_server import MCPServer, Request
 from .transport import BaseTransport
 
+
+logger = structlog.get_logger()
 
 class MessageHandler:
     """Handle incoming JSON-RPC messages using a server and transport."""
@@ -29,5 +32,6 @@ class MessageHandler:
                 )
                 response = await self.server.handle_request(request)
             except Exception as e:  # pragma: no cover - unexpected errors
-                response = {"error": str(e)}
+                logger.error("handler_error", error=str(e))
+                response = {"error": "内部服务器错误"}
             await self.transport.send(json.dumps(response, ensure_ascii=False))

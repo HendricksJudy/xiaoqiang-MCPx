@@ -3,6 +3,7 @@
 import asyncio
 from dataclasses import dataclass
 from typing import Any, Dict
+import structlog
 
 from ..tools.knowledge_base import KnowledgeBase
 from ..tools.medical_resources import MedicalResources
@@ -18,6 +19,8 @@ from ..security.auth import verify_token
 from ..security.rate_limiter import RateLimiter
 from ..security.session import verify_session
 from .capabilities import get_capabilities
+
+logger = structlog.get_logger()
 
 
 @dataclass
@@ -118,9 +121,14 @@ class MCPServer:
                     "error": {"code": e.code, "message": e.message},
                     "jsonrpc": "2.0",
                 }
-            except Exception:
+            except Exception as e:
                 success = False
-                raise
+                logger.error("unexpected_error", error=str(e))
+                return {
+                    "id": request.id,
+                    "error": {"code": -32603, "message": "内部服务器错误"},
+                    "jsonrpc": "2.0",
+                }
             finally:
                 duration = asyncio.get_event_loop().time() - start
                 self.metrics.record_tool_call(name or "unknown", duration, success)

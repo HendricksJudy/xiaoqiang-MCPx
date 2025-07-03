@@ -12,8 +12,14 @@ class RateLimiter:
         self.window = window
         self._requests: Dict[str, Tuple[int, float]] = {}
 
+    def _purge_expired(self, now: float) -> None:
+        expired = [t for t, (_, start) in self._requests.items() if now - start > self.window]
+        for t in expired:
+            del self._requests[t]
+
     def check(self, token: str) -> None:
         now = time.time()
+        self._purge_expired(now)
         count, start = self._requests.get(token, (0, now))
         if now - start > self.window:
             count = 0
