@@ -16,6 +16,7 @@ from ..utils.errors import McpError
 from ..utils.docs import generate_tool_docs
 from ..security.auth import verify_token
 from ..security.rate_limiter import RateLimiter
+from ..security.session import verify_session
 from .capabilities import get_capabilities
 
 
@@ -57,10 +58,12 @@ class MCPServer:
         if request.method == "tools/call":
             name = request.params.get("name")
             args = request.params.get("arguments", {})
+            session_id = request.params.get("session_id", "")
             token = request.params.get("token", "")
             start = asyncio.get_event_loop().time()
             success = True
             try:
+                verify_session(session_id)
                 verify_token(token)
                 self.rate_limiter.check(token)
                 if name == "query_knowledge_base":
