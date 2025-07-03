@@ -1,11 +1,12 @@
 from pathlib import Path
 import sys
+import os
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-import pytest
-
 from src.server.mcp_server import MCPServer, Request
+import pytest
+os.environ["MCP_SESSION_ID"] = "sess"
 
 
 @pytest.mark.asyncio
@@ -18,6 +19,7 @@ async def test_drug_info_query():
             "name": "query_drug_info",
             "arguments": {"drug_name": "阿司匹林"},
             "token": "testtoken",
+            "session_id": "sess",
         },
     )
     resp = await server.handle_request(req)
